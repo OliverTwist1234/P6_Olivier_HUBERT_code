@@ -4,13 +4,16 @@ const express = require("express");
 //importation du package mangoose qui facilite les interactions avec notre base de données MongoDB
 const mongoose = require("mongoose");
 
+//importation de path (natif de node) qui donne accès aux chemins du système de fichier
+const path = require("path");
+
+//Importation du package helmet pour sécuriser les en-têtes de requêtes HTTP
+const helmet = require("helmet");
+
 //importation du routeur d'authentification utilisateur
 const userRoutes = require("./routes/user");
 //importation du routeur des sauces
 const saucesRoutes = require("./routes/sauce");
-
-//importation de path (natif de node) qui donne accès aux chemins du système de fichier
-const path = require("path");
 
 //on crée notre aplication express
 const app = express();
@@ -47,6 +50,9 @@ app.use((req, res, next) => {
   );
   next();
 });
+
+// securisation des headers de requêtes, 11 middlewares
+app.use(helmet());
 
 //On indique à Express qu'il faut gérer la ressource images de manière statique
 app.use("/images", express.static(path.join(__dirname, "images")));
