@@ -14,6 +14,9 @@ const helmet = require("helmet");
 //afin d'éviter les conflits entre différentes versions de Node
 const nocache = require("nocache");
 
+//Importation du package cookie-session pour sécuriser les cookies
+const cookieSession = require("cookie-session");
+
 //importation du routeur d'authentification utilisateur
 const userRoutes = require("./routes/user");
 //importation du routeur des sauces
@@ -60,6 +63,19 @@ app.use(helmet());
 
 // désactivation de la mise en cache npm
 app.use(nocache());
+
+// sécurisation des cookies
+app.use(
+  cookieSession({
+    keys: [process.env.COOKIE_KEY1, process.env.COOKIE_KEY2],
+    cookie: {
+      secure: true,
+      httpOnly: true,
+      domain: "http://localhost:3000",
+      maxAge: 60 * 60 * 1000, // 1 heure en ms
+    },
+  })
+);
 
 //On indique à Express qu'il faut gérer la ressource images de manière statique
 app.use("/images", express.static(path.join(__dirname, "images")));
