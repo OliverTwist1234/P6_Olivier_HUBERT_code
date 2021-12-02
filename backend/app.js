@@ -10,6 +10,10 @@ const path = require("path");
 //Importation du package helmet pour sécuriser les en-têtes de requêtes HTTP
 const helmet = require("helmet");
 
+//Importation du package nocache pour désactiver la mise en cache npm
+//afin d'éviter les conflits entre différentes versions de Node
+const nocache = require("nocache");
+
 //importation du routeur d'authentification utilisateur
 const userRoutes = require("./routes/user");
 //importation du routeur des sauces
@@ -53,6 +57,9 @@ app.use((req, res, next) => {
 
 // securisation des headers de requêtes, 11 middlewares
 app.use(helmet());
+
+// désactivation de la mise en cache npm
+app.use(nocache());
 
 //On indique à Express qu'il faut gérer la ressource images de manière statique
 app.use("/images", express.static(path.join(__dirname, "images")));
