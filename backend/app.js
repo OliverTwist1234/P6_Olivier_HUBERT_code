@@ -1,8 +1,26 @@
 //Importation du package express, framework qui permet de développer des applications web et mobiles
 const express = require("express");
 
+//importation du package mangoose qui facilite les interactions avec notre base de données MongoDB
+const mongoose = require("mongoose");
+
 //on crée notre aplication express
 const app = express();
+
+//middleware global capable d'extraire l'objet JSON des requêtes POST provenants de l'application front-end
+//va transformer le corps de la requête en objet JS utilisable
+app.use(express.json());
+
+//Importation package dotenv pour accéder aux variables d'environnement
+require("dotenv").config();
+//Connection de l'api au cluster MongoDB
+mongoose
+  .connect(
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}?retryWrites=true&w=majority`,
+    { useNewUrlParser: true, useUnifiedTopology: true }
+  )
+  .then(() => console.log("Connexion à MongoDB réussie !"))
+  .catch(() => console.log("Connexion à MongoDB échouée !"));
 
 //Gestion des erreurs de CORS, pour permettre au serveurs front et back de communiquer
 //Ajout d'un middleware qui permet d'ajouter des headers aux réponses de requêtes
