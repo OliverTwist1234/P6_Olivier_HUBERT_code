@@ -17,6 +17,10 @@ const nocache = require("nocache");
 //Importation du package cookie-session pour sécuriser les cookies
 const cookieSession = require("cookie-session");
 
+//Importation du package express-rate-limit pour limiter le nombre de requêtes par IP utilisateur
+//pour protéger contre les attaques de force brute
+const rateLimit = require("express-rate-limit");
+
 //importation du routeur d'authentification utilisateur
 const userRoutes = require("./routes/user");
 //importation du routeur des sauces
@@ -76,6 +80,15 @@ app.use(
     },
   })
 );
+
+//Limitation du nombre de requêtes
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // limite chaque IP à 50 requêtes par windowMs
+  message: "Trop de requêtes effectuées, Réessayez dans 15 minutes",
+});
+// limitation des requêtes sur toutes les routes
+app.use(limiter);
 
 //On indique à Express qu'il faut gérer la ressource images de manière statique
 app.use("/images", express.static(path.join(__dirname, "images")));
