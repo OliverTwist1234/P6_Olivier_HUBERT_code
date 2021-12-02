@@ -4,7 +4,7 @@
 //importation du package multer qui permet de gérer les fichiers entrants dans les requêtes HTTP
 const multer = require("multer");
 
-//onstante dictionnaire de type MIME pour indiquer le type de fichiers supportés
+//constante dictionnaire de type MIME pour indiquer le type de fichiers supportés
 const MIME_TYPES = {
   "image/jpg": "jpg",
   "image/jpeg": "jpg",
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, "images");
   },
-  //a fonction filename indique à multer
+  //la fonction filename indique à multer
   filename: (req, file, callback) => {
     //d'utiliser le nom d'origine, de remplacer les espaces par des underscores
     const name = file.originalname.split(" ").join("_");

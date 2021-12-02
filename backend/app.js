@@ -6,6 +6,11 @@ const mongoose = require("mongoose");
 
 //importation du routeur d'authentification utilisateur
 const userRoutes = require("./routes/user");
+//importation du routeur des sauces
+const saucesRoutes = require("./routes/sauce");
+
+//importation de path (natif de node) qui donne accès aux chemins du système de fichier
+const path = require("path");
 
 //on crée notre aplication express
 const app = express();
@@ -43,8 +48,13 @@ app.use((req, res, next) => {
   next();
 });
 
+//On indique à Express qu'il faut gérer la ressource images de manière statique
+app.use("/images", express.static(path.join(__dirname, "images")));
+
 //on enregistre le routeur d'authentification utilisateur
 app.use("/api/auth", userRoutes);
+//on enregistre le routeur des sauces
+app.use("/api/sauces", saucesRoutes);
 
 //on exporte notre application pour pouvoir s'en servir dans les autres fichiers
 //notamment notre server node
