@@ -21,6 +21,9 @@ const cookieSession = require("cookie-session");
 //pour protéger contre les attaques de force brute
 const rateLimit = require("express-rate-limit");
 
+//Importation du package express-mongo-sanitize pour empêcher l'injection d'opérateurs MongoDB
+const mongoSanitize = require("express-mongo-sanitize");
+
 //importation du routeur d'authentification utilisateur
 const userRoutes = require("./routes/user");
 //importation du routeur des sauces
@@ -89,6 +92,9 @@ const limiter = rateLimit({
 });
 // limitation des requêtes sur toutes les routes
 app.use(limiter);
+
+// expres-mongo-sanitize pour empêcher l'injection d'opérateurs MongoDB
+app.use(mongoSanitize());
 
 //On indique à Express qu'il faut gérer la ressource images de manière statique
 app.use("/images", express.static(path.join(__dirname, "images")));
