@@ -4,6 +4,9 @@ const express = require("express");
 //importation du package mangoose qui facilite les interactions avec notre base de données MongoDB
 const mongoose = require("mongoose");
 
+//importation du routeur d'authentification utilisateur
+const userRoutes = require("./routes/user");
+
 //on crée notre aplication express
 const app = express();
 
@@ -39,6 +42,9 @@ app.use((req, res, next) => {
   );
   next();
 });
+
+//on enregistre le routeur d'authentification utilisateur
+app.use("/api/auth", userRoutes);
 
 //on exporte notre application pour pouvoir s'en servir dans les autres fichiers
 //notamment notre server node
