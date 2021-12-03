@@ -9,6 +9,9 @@ const jwt = require("jsonwebtoken");
 //Importation du modèle utilisateur
 const User = require("../models/User");
 
+//Importation package dotenv pour accéder aux variables d'environnement
+require("dotenv").config();
+
 //Middleware qui va contrôler l'inscription utilisateur et l'enregistrer dans la base de données
 exports.signup = (req, res, next) => {
   //hachage du mot de passe utilisateur avec la fonction asynchrone hash() de bcrypt
@@ -63,7 +66,7 @@ exports.login = (req, res, next) => {
               //ce token contient l'ID de l'utilisateur en tant que payload (données encodées dans le token)
               { userId: user._id },
               //on utilise une chaîne secrète de développement temporaire RANDOM_SECRET_KEY pour encoder notre token
-              "RANDOM_TOKEN_SECRET",
+              process.env.RANDOM_TOKEN_SECRET,
               //on défini la durée de validité du token à 24 heures. L'utilisateur devra se reconnecter au bout de 24 heures
               { expiresIn: "24h" }
             ),

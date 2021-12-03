@@ -3,6 +3,9 @@
 //Importation du package jsonwebtoken pour vérifier les tokens
 const jwt = require("jsonwebtoken");
 
+//Importation package dotenv pour accéder aux variables d'environnement
+require("dotenv").config();
+
 //Eportation du middleware d'authentification
 module.exports = (req, res, next) => {
   //étant donné que de nombreux problèmes peuvent se produire
@@ -15,7 +18,7 @@ module.exports = (req, res, next) => {
     const token = req.headers.authorization.split(" ")[1];
     //On utilise ensuite la fonction verify pour décoder le token
     //Si celui-ci n'est pas valide, une erreur sera générée
-    const decodedToken = jwt.verify(token, "RANDOM_TOKEN_SECRET");
+    const decodedToken = jwt.verify(token, process.env.RANDOM_TOKEN_SECRET);
     //on extraie l'ID utilisateur du token
     const userId = decodedToken.userId;
     //on attribue le userId à l'objet requête
