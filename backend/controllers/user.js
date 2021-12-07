@@ -51,7 +51,7 @@ exports.signup = (req, res, next) => {
     emailValidator.validate(req.body.email) &&
     passwordSchema.validate(req.body.password)
   ) {
-    // si l'email et le passaword sont valides
+    //sinon si l'email et le passaword sont valides
     //hachage du mot de passe utilisateur avec la fonction asynchrone hash() de bcrypt
     //On lui passe en argument le mot de passe du corps de la requête
     //et le salt : on execute 10 fois l'algorithme de hachage pour avoir un mot de passe sécurisé
