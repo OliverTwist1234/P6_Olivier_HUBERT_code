@@ -6,35 +6,74 @@ const bcrypt = require("bcrypt");
 //Importation du package jsonwebtoken pour créer et vérifier les tokens d'authentification
 const jwt = require("jsonwebtoken");
 
+//Importation du package email-validator pour vérifier la validité de l'email utilisateur
+const emailValidator = require("email-validator");
+
+//Importation du package password-validator pour vérifier la validité du password utilisateur
+const passwordValidator = require("password-validator");
+
 //Importation du modèle utilisateur
 const User = require("../models/User");
 
 //Importation package dotenv pour accéder aux variables d'environnement
 require("dotenv").config();
 
+//Création d'un schéma password pour vérifier la validité du password utilisateur
+const passwordSchema = new passwordValidator();
+
+passwordSchema
+  .is()
+  .min(8) // Minimum 8 caractères
+  .is()
+  .max(30) // Maximum 30 caractères
+  .has()
+  .uppercase() // doit contenir au moins une majuscule
+  .has()
+  .lowercase() // doit contenir au moins une minuscule
+  .has()
+  .digits() // doit contenir au moins un chiffre
+
 //Middleware qui va contrôler l'inscription utilisateur et l'enregistrer dans la base de données
 exports.signup = (req, res, next) => {
-  //hachage du mot de passe utilisateur avec la fonction asynchrone hash() de bcrypt
-  //On lui passe en argument le mot de passe du corps de la requête
-  //et le salt : on execute 10 fois l'algorithme de hachage pour avoir un mot de passe sécurisé
-  bcrypt
-    .hash(req.body.password, 10)
-    //si la requête de signup aboutie, on récupère le hash du mot de passe et on crée l'utilisateur
-    .then((hash) => {
-      const user = new User({
-        email: req.body.email,
-        password: hash,
+  // si l'email ou le mot de passe ne sont pas valides
+  if (
+    !emailValidator.validate(req.body.email) ||
+    !passwordSchema.validate(req.body.password)
+  ) {
+    //alors on retourne une erreur 400 et un message d'erreur
+    return res
+      .status(400)
+      .json({
+        message:
+          "Veuillez saisir une addresse email valide et un mot de passe contenant au moins 8 caractères, une majuscule, une minuscule et un chiffre ! ",
       });
-      //on enregistre l'utisateur crée dans la base de données
-      user
-        .save()
-        // si cela a abouti on retourne dans la réponse un code 201 et un message
-        .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
-        // si cela n'a pas abouti on retourne un code 400 et l'erreur.
-        .catch((error) => res.status(400).json({ error }));
-    })
-    //si la requête du signup n'aboutie pas, on retourne un code 500(erreur server) et l'erreur
-    .catch((error) => res.status(500).json({ error }));
+  } else if (
+    emailValidator.validate(req.body.email) &&
+    passwordSchema.validate(req.body.password)
+  ) {
+    // si l'email et le passaword sont valides
+    //hachage du mot de passe utilisateur avec la fonction asynchrone hash() de bcrypt
+    //On lui passe en argument le mot de passe du corps de la requête
+    //et le salt : on execute 10 fois l'algorithme de hachage pour avoir un mot de passe sécurisé
+    bcrypt
+      .hash(req.body.password, 10)
+      //si la requête de signup aboutie, on récupère le hash du mot de passe et on crée l'utilisateur
+      .then((hash) => {
+        const user = new User({
+          email: req.body.email,
+          password: hash,
+        });
+        //on enregistre l'utisateur crée dans la base de données
+        user
+          .save()
+          // si cela a abouti on retourne dans la réponse un code 201 et un message
+          .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
+          // si cela n'a pas abouti on retourne un code 400 et l'erreur.
+          .catch((error) => res.status(400).json({ error }));
+      })
+      //si la requête du signup n'aboutie pas, on retourne un code 500(erreur server) et l'erreur
+      .catch((error) => res.status(500).json({ error }));
+  }
 };
 
 //Middleware qui va contrôler le login de l'utilisateur
